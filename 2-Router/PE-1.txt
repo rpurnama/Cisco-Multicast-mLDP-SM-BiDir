@@ -1,0 +1,595 @@
+=~=~=~=~=~=~=~=~=~=~=~= PuTTY log 2024.07.10 12:57:03 =~=~=~=~=~=~=~=~=~=~=~=
+R1#
+R1#term le 0
+R1#
+R1#show run
+Building configuration...
+
+Current configuration : 2633 bytes
+!
+! Last configuration change at 03:52:36 UTC Wed Jul 10 2024
+!
+version 15.2
+service timestamps debug datetime msec
+service timestamps log datetime msec
+!
+hostname R1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable secret 5 $1$kzLa$CwuxVKcsioxy2RsFxqZVz/
+!
+no aaa new-model
+!
+ip vrf MCAST
+ rd 100:1
+ vpn id 100:1
+ mdt preference mldp 
+ mdt default mpls mldp 3.3.3.3
+ mdt data mpls mldp 10
+ mdt data threshold 1
+ route-target export 100:1
+ route-target import 100:1
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip multicast-routing 
+ip multicast-routing vrf MCAST 
+ip cef
+no ipv6 cef
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+username netadmin privilege 15 password 0 admin123
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 1.1.1.1 255.255.255.255
+ ip pim sparse-mode
+!
+interface Loopback101
+ ip vrf forwarding MCAST
+ ip address 101.101.101.101 255.255.255.255
+ ip pim sparse-mode
+!
+interface FastEthernet0/0
+ no ip address
+ shutdown
+ duplex full
+!
+interface Ethernet1/0
+ description ** To R2 Eth1/0 **
+ bandwidth 10000
+ ip address 10.0.12.1 255.255.255.0
+ ip ospf network point-to-point
+ duplex full
+!
+interface Ethernet1/1
+ description ** To R3 Eth1/1 **
+ ip address 10.0.13.1 255.255.255.0
+ ip ospf network point-to-point
+ shutdown
+ duplex full
+!
+interface Ethernet1/2
+ no ip address
+ shutdown
+ duplex full
+!
+interface Ethernet1/3
+ no ip address
+ shutdown
+ duplex full
+!
+interface Ethernet2/0
+ ip vrf forwarding MCAST
+ ip address 192.168.1.1 255.255.255.0
+ ip pim sparse-mode
+ duplex full
+!
+interface Ethernet2/1
+ no ip address
+ shutdown
+ duplex full
+!
+interface Ethernet2/2
+ no ip address
+ shutdown
+ duplex full
+!
+interface Ethernet2/3
+ no ip address
+ shutdown
+ duplex full
+!
+router ospf 1
+ network 0.0.0.0 255.255.255.255 area 0
+ mpls ldp autoconfig area 0
+!
+router bgp 100
+ bgp router-id 1.1.1.1
+ bgp log-neighbor-changes
+ neighbor 2.2.2.2 remote-as 100
+ neighbor 2.2.2.2 update-source Loopback0
+ !
+ address-family ipv4
+  neighbor 2.2.2.2 activate
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 2.2.2.2 activate
+  neighbor 2.2.2.2 send-community both
+ exit-address-family
+ !
+ address-family ipv4 mdt
+  neighbor 2.2.2.2 activate
+  neighbor 2.2.2.2 send-community both
+ exit-address-family
+ !
+ address-family ipv4 vrf MCAST
+  redistribute connected
+  redistribute static
+ exit-address-family
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+ip pim vrf MCAST rp-address 101.101.101.101
+ip route vrf MCAST 101.101.101.101 255.255.255.255 192.168.1.100
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ login local
+ transport input telnet ssh
+!
+!
+end
+
+R1#show cdp nei
+Capability Codes: R - Router, T - Trans Bridge, B - Source Route Bridge
+                  S - Switch, H - Host, I - IGMP, r - Repeater, P - Phone, 
+                  D - Remote, C - CVTA, M - Two-port Mac Relay 
+
+Device ID        Local Intrfce     Holdtme    Capability  Platform  Port ID
+CE-1             Eth 2/0           136               R    Linux Uni Eth 0/0
+R2               Eth 1/0           126               R    7206VXR   Eth 1/0
+R1#show ip igmp vrf MCAST group
+IGMP Connected Group Membership
+Group Address    Interface                Uptime    Expires   Last Reporter   Group Accounted
+224.2.2.2        Ethernet2/0              02:21:46  00:02:40  192.168.1.100   
+224.0.1.40       Ethernet2/0              02:23:24  00:02:39  192.168.1.100   
+R1#show ip pim vrf MCAST neigh
+PIM Neighbor Table
+Mode: B - Bidir Capable, DR - Designated Router, N - Default DR Priority,
+      P - Proxy Capable, S - State Refresh Capable, G - GenID Capable
+Neighbor          Interface                Uptime/Expires    Ver   DR
+Address                                                            Prio/Mode
+192.168.1.100     Ethernet2/0              02:22:19/00:01:14 v2    1 / DR S P G
+R1#show ip pim vrf MCAST rp map
+PIM Group-to-RP Mappings
+
+Group(s): 224.0.0.0/4, Static
+    RP: 101.101.101.101 (?)
+R1#show ip mroute vrf MCAST
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry, E - Extranet,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report, 
+       Z - Multicast Tunnel, z - MDT-data group sender, 
+       Y - Joined MDT-data group, y - Sending to MDT-data group, 
+       G - Received BGP C-Mroute, g - Sent BGP C-Mroute, 
+       Q - Received BGP S-A Route, q - Sent BGP S-A Route, 
+       V - RD & Vector, v - Vector
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 224.2.2.2), 02:21:46/00:02:59, RP 101.101.101.101, flags: SJC
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    Ethernet2/0, Forward/Sparse, 00:52:25/00:02:59
+
+(192.168.1.100, 224.2.2.2), 00:01:44/00:01:15, flags: PJT
+  Incoming interface: Ethernet2/0, RPF nbr 192.168.1.100
+  Outgoing interface list: Null
+
+(202.202.202.202, 224.2.2.2), 00:02:44/00:00:47, flags: 
+  Incoming interface: Lspvif0, RPF nbr 2.2.2.2
+  Outgoing interface list:
+    Ethernet2/0, Forward/Sparse, 00:02:44/00:02:59
+
+(192.168.2.100, 224.2.2.2), 00:02:44/00:00:47, flags: 
+  Incoming interface: Lspvif0, RPF nbr 2.2.2.2
+  Outgoing interface list:
+    Ethernet2/0, Forward/Sparse, 00:02:44/00:02:59
+
+(*, 224.0.1.40), 02:23:24/00:02:39, RP 101.101.101.101, flags: SJCL
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    Ethernet2/0, Forward/Sparse, 00:52:25/00:03:01
+
+R1#show mpls mldp nei
+
+ MLDP peer ID    : 2.2.2.2:0, uptime 00:03:39 Up, 
+  Target Adj     : No
+  Session hndl   : 3
+  Upstream count : 0
+  Branch count   : 1
+  Path count     : 1
+  Path(s)        : 10.0.12.2         LDP Ethernet1/0
+  Nhop count     : 0
+R1#show mpls mldp root
+
+ Root node    : 3.3.3.3 
+  Metric      : 4294967295
+  Distance    : 255
+  Interface   : None (via unicast RT)
+  FEC count   : 1
+  Path count  : 0
+
+ Root node    : 1.1.1.1 (We are the root)
+  Metric      : 0
+  Distance    : 0
+  Interface   : Loopback0 (via unicast RT)
+  FEC count   : 1
+  Path count  : 1
+  Path(s)     : 1.1.1.1          LDP nbr: none              Loopback0
+R1#show mpls mldp count
+MLDP Database Summary:
+  Number of MP2MP Entries : 2
+  Number of P2MP Entries  : 0
+  Total Number of Entries : 2
+
+MLDP Root Count:
+  Total Number of MLDP roots: 2
+
+MLDP Neighbor Count:
+  Total Number of MLDP neighbors: 1
+
+R1#show mpls mldp database
+  * Indicates MLDP recursive forwarding is enabled
+
+LSM ID : 7   Type: MP2MP   Uptime : 00:03:39
+  FEC Root           : 1.1.1.1 (we are the root)
+  Opaque decoded     : [mdt 100:1 0] 
+  Opaque length      : 11 bytes
+  Opaque value       : 02 000B 0001000000000100000000
+  Upstream client(s) :
+    None
+      Expires        : N/A           Path Set ID  : B
+  Replication client(s): 
+    2.2.2.2:0 
+      Uptime         : 00:03:39      Path Set ID  : C
+      Out label (D)  : 16            Interface    : Ethernet1/0*
+      Local label (U): 26            Next Hop     : 10.0.12.2
+
+LSM ID : 1 (RNR LSM ID: 2)   Type: MP2MP   Uptime : 02:23:17
+  FEC Root           : 3.3.3.3 
+  Opaque decoded     : [mdt 100:1 0] 
+  Opaque length      : 11 bytes
+  Opaque value       : 02 000B 0001000000000100000000
+  RNR active LSP     : (this entry)
+  Upstream client(s) :
+    None
+      Expires        : N/A           Path Set ID  : 1
+  Replication client(s): 
+    MDT  (VRF MCAST)
+      Uptime         : 02:23:16      Path Set ID  : 2
+      Interface      : Lspvif0       
+
+R1#show ip multicast vrf MCAST mpls vif
+
+Interface   Next-hop             Application     Ref-Count   Table / VRF name
+ Lspvif0     0.0.0.0              MDT               N/A       1    (vrf MCAST)
+R1#
+R1#show mpls ldp neighbor
+    Peer LDP Ident: 2.2.2.2:0; Local LDP Ident 1.1.1.1:0
+	TCP connection: 2.2.2.2.52097 - 1.1.1.1.646
+	State: Oper; Msgs sent/rcvd: 17/16; Downstream
+	Up time: 00:03:39
+	LDP discovery sources:
+	  Ethernet1/0, Src IP addr: 10.0.12.2
+        Addresses bound to peer LDP Ident:
+          10.0.12.2       2.2.2.2         
+R1#show mpls forwarding-table
+Local      Outgoing   Prefix           Bytes Label   Outgoing   Next Hop    
+Label      Label      or Tunnel Id     Switched      interface              
+17         No Label   3.3.3.3/32       0             drop       
+18         Pop Label  101.101.101.101/32[V]   \
+                                       3340          aggregate/MCAST 
+19         No Label   192.168.1.0/24[V]   \
+                                       0             aggregate/MCAST 
+21         No Label   10.0.23.0/24     0             drop       
+23         Pop Label  2.2.2.2/32       0             Et1/0      10.0.12.2   
+25         No Label   10.0.13.0/24     0             drop       
+26         No Label   [mdt 100:1 0]    0                        
+R1#show mpls interfaces
+Interface              IP            Tunnel   BGP Static Operational
+Ethernet1/0            Yes (ldp)     No       No  No     Yes        
+Ethernet1/1            Yes           No       No  No     No         
+R1#show bgp ipv4 unicast summary
+BGP router identifier 1.1.1.1, local AS number 100
+BGP table version is 1, main routing table version 1
+
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+2.2.2.2         4          100      66      69        1    0    0 00:56:17        0
+R1#show bgp ipv4 unicast neigh
+BGP neighbor is 2.2.2.2,  remote AS 100, internal link
+  BGP version 4, remote router ID 2.2.2.2
+  BGP state = Established, up for 00:56:17
+  Last read 00:01:03, last write 00:00:34, hold time is 180, keepalive interval is 60 seconds
+  Neighbor sessions:
+    1 active, is not multisession capable (disabled)
+  Neighbor capabilities:
+    Route refresh: advertised and received(new)
+    Four-octets ASN Capability: advertised and received
+    Address family IPv4 Unicast: advertised and received
+    Address family IPv4 MDT: advertised and received
+    Address family VPNv4 Unicast: advertised and received
+    Enhanced Refresh Capability: advertised and received
+    Multisession Capability: 
+    Stateful switchover support enabled: NO for session 1
+  Message statistics:
+    InQ depth is 0
+    OutQ depth is 0
+    
+                         Sent       Rcvd
+    Opens:                  1          1
+    Notifications:          0          0
+    Updates:                5          4
+    Keepalives:            63         61
+    Route Refresh:          0          0
+    Total:                 69         66
+  Default minimum time between advertisement runs is 0 seconds
+
+ For address family: IPv4 Unicast
+  Session: 2.2.2.2
+  BGP table version 1, neighbor version 1/0
+  Output queue size : 0
+  Index 2, Advertise bit 0
+  2 update-group member
+  Slow-peer detection is disabled
+  Slow-peer split-update-group dynamic is disabled
+                                 Sent       Rcvd
+  Prefix activity:               ----       ----
+    Prefixes Current:               0          0
+    Prefixes Total:                 0          0
+    Implicit Withdraw:              0          0
+    Explicit Withdraw:              0          0
+    Used as bestpath:             n/a          0
+    Used as multipath:            n/a          0
+
+                                   Outbound    Inbound
+  Local Policy Denied Prefixes:    --------    -------
+    Total:                                0          0
+  Number of NLRIs in the update sent: max 0, min 0
+  Last detected as dynamic slow peer: never
+  Dynamic slow peer recovered: never
+  Refresh Epoch: 1
+  Last Sent Refresh Start-of-rib: never
+  Last Sent Refresh End-of-rib: never
+  Last Received Refresh Start-of-rib: never
+  Last Received Refresh End-of-rib: never
+				       Sent	  Rcvd
+	Refresh activity:	       ----	  ----
+	  Refresh Start-of-RIB          0          0
+	  Refresh End-of-RIB            0          0
+
+ For address family: IPv4 MDT
+  Session: 2.2.2.2
+  BGP table version 1, neighbor version 1/0
+  Output queue size : 0
+  Index 2, Advertise bit 0
+  2 update-group member
+  Community attribute sent to this neighbor
+  Slow-peer detection is disabled
+  Slow-peer split-update-group dynamic is disabled
+                                 Sent       Rcvd
+  Prefix activity:               ----       ----
+    Prefixes Current:               0          0
+    Prefixes Total:                 0          0
+    Implicit Withdraw:              0          0
+    Explicit Withdraw:              0          0
+    Used as bestpath:             n/a          0
+    Used as multipath:            n/a          0
+
+                                   Outbound    Inbound
+  Local Policy Denied Prefixes:    --------    -------
+    Total:                                0          0
+  Number of NLRIs in the update sent: max 0, min 0
+  Last detected as dynamic slow peer: never
+  Dynamic slow peer recovered: never
+  Refresh Epoch: 1
+  Last Sent Refresh Start-of-rib: never
+  Last Sent Refresh End-of-rib: never
+  Last Received Refresh Start-of-rib: never
+  Last Received Refresh End-of-rib: never
+				       Sent	  Rcvd
+	Refresh activity:	       ----	  ----
+	  Refresh Start-of-RIB          0          0
+	  Refresh End-of-RIB            0          0
+
+ For address family: VPNv4 Unicast
+  Session: 2.2.2.2
+  BGP table version 23, neighbor version 23/0
+  Output queue size : 0
+  Index 2, Advertise bit 0
+  2 update-group member
+  Community attribute sent to this neighbor
+  Slow-peer detection is disabled
+  Slow-peer split-update-group dynamic is disabled
+                                 Sent       Rcvd
+  Prefix activity:               ----       ----
+    Prefixes Current:               2          2 (Consumes 160 bytes)
+    Prefixes Total:                 3          2
+    Implicit Withdraw:              1          0
+    Explicit Withdraw:              0          0
+    Used as bestpath:             n/a          2
+    Used as multipath:            n/a          0
+
+                                   Outbound    Inbound
+  Local Policy Denied Prefixes:    --------    -------
+    Bestpath from this peer:              2        n/a
+    AF Permit Check:                      2        n/a
+    Total:                                4          0
+  Number of NLRIs in the update sent: max 2, min 0
+  Last detected as dynamic slow peer: never
+  Dynamic slow peer recovered: never
+  Refresh Epoch: 1
+  Last Sent Refresh Start-of-rib: never
+  Last Sent Refresh End-of-rib: never
+  Last Received Refresh Start-of-rib: never
+  Last Received Refresh End-of-rib: never
+				       Sent	  Rcvd
+	Refresh activity:	       ----	  ----
+	  Refresh Start-of-RIB          0          0
+	  Refresh End-of-RIB            0          0
+
+  Address tracking is enabled, the RIB does have a route to 2.2.2.2
+  Connections established 2; dropped 1
+  Last reset 01:00:30, due to Active open failed
+  Transport(tcp) path-mtu-discovery is enabled
+  Graceful-Restart is disabled
+Connection state is ESTAB, I/O status: 1, unread input bytes: 0        
+Connection is ECN Disabled
+Mininum incoming TTL 0, Outgoing TTL 255
+Local host: 1.1.1.1, Local port: 179
+Foreign host: 2.2.2.2, Foreign port: 57100
+Connection tableid (VRF): 0
+
+Enqueued packets for retransmit: 0, input: 0  mis-ordered: 0 (0 bytes)
+
+Event Timers (current time is 0x838848):
+Timer          Starts    Wakeups            Next
+Retrans            65          0             0x0
+TimeWait            0          0             0x0
+AckHold            62         57             0x0
+SendWnd             0          0             0x0
+KeepAlive           0          0             0x0
+GiveUp              0          0             0x0
+PmtuAger            0          0             0x0
+DeadWait            0          0             0x0
+Linger              0          0             0x0
+
+iss:  135575549  snduna:  135577098  sndnxt:  135577098     sndwnd:  16289
+irs:  201035015  rcvnxt:  201036435  rcvwnd:      14965  delrcvwnd:   1419
+
+SRTT: 300 ms, RTTO: 303 ms, RTV: 3 ms, KRTT: 0 ms
+minRTT: 28 ms, maxRTT: 492 ms, ACK hold: 200 ms
+Status Flags: passive open, gen tcbs
+Option Flags: nagle, path mtu capable
+
+Datagrams (max data segment is 1436 bytes):
+Rcvd: 132 (out of order: 0), with data: 65, total data bytes: 1419
+Sent: 128 (retransmit: 0 fastretransmit: 0),with data: 68, total data bytes: 1548
+
+
+R1#show bgp vpnv4 unicast all
+BGP table version is 23, local router ID is 1.1.1.1
+Status codes: s suppressed, d damped, h history, * valid, > best, i - internal, 
+              r RIB-failure, S Stale, m multipath, b backup-path, f RT-Filter, 
+              x best-external, a additional-path, c RIB-compressed, 
+Origin codes: i - IGP, e - EGP, ? - incomplete
+RPKI validation codes: V valid, I invalid, N Not found
+
+     Network          Next Hop            Metric LocPrf Weight Path
+Route Distinguisher: 100:1 (default for vrf MCAST)
+ *>  101.101.101.101/32
+                       0.0.0.0                  0         32768 ?
+ *>  192.168.1.0      0.0.0.0                  0         32768 ?
+ *>i 192.168.2.0      2.2.2.2                  0    100      0 ?
+ *>i 202.202.202.202/32
+                       2.2.2.2                  0    100      0 ?
+R1#show ip ospf nei
+
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+2.2.2.2           0   FULL/  -        00:00:25    10.0.12.2       Ethernet1/0
+R1#show ip osp inter
+Loopback0 is up, line protocol is up 
+  Internet Address 1.1.1.1/32, Area 0, Attached via Network Statement
+  Process ID 1, Router ID 1.1.1.1, Network Type LOOPBACK, Cost: 1
+  Topology-MTID    Cost    Disabled    Shutdown      Topology Name
+        0           1         no          no            Base
+  Loopback interface is treated as a stub Host
+Ethernet1/1 is administratively down, line protocol is down 
+  Internet Address 10.0.13.1/24, Area 0, Attached via Network Statement
+  Process ID 1, Router ID 1.1.1.1, Network Type POINT_TO_POINT, Cost: 10
+  Topology-MTID    Cost    Disabled    Shutdown      Topology Name
+        0           10        no          no            Base
+  Transmit Delay is 1 sec, State DOWN
+  Timer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5
+    oob-resync timeout 40
+Ethernet1/0 is up, line protocol is up 
+  Internet Address 10.0.12.1/24, Area 0, Attached via Network Statement
+  Process ID 1, Router ID 1.1.1.1, Network Type POINT_TO_POINT, Cost: 10
+  Topology-MTID    Cost    Disabled    Shutdown      Topology Name
+        0           10        no          no            Base
+  Transmit Delay is 1 sec, State POINT_TO_POINT
+  Timer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5
+    oob-resync timeout 40
+    Hello due in 00:00:07
+  Supports Link-local Signaling (LLS)
+  Cisco NSF helper support enabled
+  IETF NSF helper support enabled
+  Index 1/1, flood queue length 0
+  Next 0x0(0)/0x0(0)
+  Last flood scan length is 1, maximum is 1
+  Last flood scan time is 0 msec, maximum is 4 msec
+  Neighbor Count is 1, Adjacent neighbor count is 1 
+    Adjacent with neighbor 2.2.2.2
+  Suppress hello for 0 neighbor(s)
+R1#show ip inter brie
+Interface              IP-Address      OK? Method Status                Protocol
+FastEthernet0/0        unassigned      YES NVRAM  administratively down down    
+Ethernet1/0            10.0.12.1       YES NVRAM  up                    up      
+Ethernet1/1            10.0.13.1       YES NVRAM  administratively down down    
+Ethernet1/2            unassigned      YES NVRAM  administratively down down    
+Ethernet1/3            unassigned      YES NVRAM  administratively down down    
+Ethernet2/0            192.168.1.1     YES NVRAM  up                    up      
+Ethernet2/1            unassigned      YES NVRAM  administratively down down    
+Ethernet2/2            unassigned      YES NVRAM  administratively down down    
+Ethernet2/3            unassigned      YES NVRAM  administratively down down    
+Loopback0              1.1.1.1         YES NVRAM  up                    up      
+Loopback101            101.101.101.101 YES manual up                    up      
+Lspvif0                1.1.1.1         YES unset  up                    up      
+Tunnel0                192.168.1.1     YES unset  up                    up      
+Tunnel1                101.101.101.101 YES unset  up                    up      
+R1#
