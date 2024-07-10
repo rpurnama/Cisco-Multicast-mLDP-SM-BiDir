@@ -1,0 +1,350 @@
+
+R3>
+R3>ena
+Password: 
+R3#term le 0
+R3#
+R3#show run
+Building configuration...
+
+Current configuration : 1504 bytes
+!
+version 15.2
+service timestamps debug datetime msec
+service timestamps log datetime msec
+!
+hostname R3
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable secret 5 $1$asEg$liZobn6DivhhHBvw3Oz/C/
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip multicast-routing 
+ip cef
+no ipv6 cef
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+username netadmin privilege 15 password 0 admin123
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 3.3.3.3 255.255.255.255
+ ip pim sparse-mode
+!
+interface FastEthernet0/0
+ no ip address
+ shutdown
+ duplex full
+!
+interface Ethernet1/0
+ no ip address
+ shutdown
+ duplex full
+!
+interface Ethernet1/1
+ bandwidth 10000
+ ip address 10.0.13.3 255.255.255.0
+ ip ospf network point-to-point
+ duplex full
+ mpls ip
+!
+interface Ethernet1/2
+ bandwidth 10000
+ ip address 10.0.23.3 255.255.255.0
+ ip ospf network point-to-point
+ duplex full
+ mpls ip
+!
+interface Ethernet1/3
+ no ip address
+ shutdown
+ duplex full
+!
+interface Ethernet2/0
+ no ip address
+ shutdown
+ duplex full
+!
+interface Ethernet2/1
+ no ip address
+ shutdown
+ duplex full
+!
+interface Ethernet2/2
+ no ip address
+ shutdown
+ duplex full
+!
+interface Ethernet2/3
+ no ip address
+ shutdown
+ duplex full
+!
+router ospf 1
+ router-id 3.3.3.3
+ network 0.0.0.0 255.255.255.255 area 0
+ mpls ldp autoconfig area 0
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ login local
+ transport input telnet ssh
+!
+!
+end
+
+R3#show cdp nei
+Capability Codes: R - Router, T - Trans Bridge, B - Source Route Bridge
+                  S - Switch, H - Host, I - IGMP, r - Repeater, P - Phone, 
+                  D - Remote, C - CVTA, M - Two-port Mac Relay 
+
+Device ID        Local Intrfce     Holdtme    Capability  Platform  Port ID
+R2               Eth 1/2           135               R    7206VXR   Eth 1/2
+R1               Eth 1/1           130               R    7206VXR   Eth 1/1
+R3#show ip igmp vrf MCAST group
+% VPN Routing instance MCAST does not exist.
+R3#show ip pim vrf MCAST neigh
+% VPN Routing instance MCAST does not exist.
+R3#show ip pim vrf MCAST rp map
+% VPN Routing instance MCAST does not exist.
+R3#show ip mroute vrf MCAST
+% VPN Routing instance MCAST does not exist.
+R3#show mpls mldp nei
+
+ MLDP peer ID    : 1.1.1.1:0, uptime 00:40:20 Up, 
+  Target Adj     : No
+  Session hndl   : 1
+  Upstream count : 1
+  Branch count   : 1
+  Path count     : 1
+  Path(s)        : 10.0.13.1         LDP Ethernet1/1
+  Nhop count     : 1
+  Nhop list      : 10.0.13.1 
+
+ MLDP peer ID    : 2.2.2.2:0, uptime 00:01:23 Up, 
+  Target Adj     : No
+  Session hndl   : 4
+  Upstream count : 0
+  Branch count   : 2
+  Path count     : 1
+  Path(s)        : 10.0.23.2         LDP Ethernet1/2
+  Nhop count     : 0
+R3#show mpls mldp root
+
+ Root node    : 3.3.3.3 (We are the root)
+  Metric      : 0
+  Distance    : 0
+  Interface   : Loopback0 (via unicast RT)
+  FEC count   : 1
+  Path count  : 1
+  Path(s)     : 3.3.3.3          LDP nbr: none              Loopback0
+
+ Root node    : 1.1.1.1 
+  Metric      : 11
+  Distance    : 110
+  Interface   : Ethernet1/1 (via unicast RT)
+  FEC count   : 1
+  Path count  : 1
+  Path(s)     : 10.0.13.1        LDP nbr: 1.1.1.1:0         Ethernet1/1
+R3#show mpls mldp count
+MLDP Database Summary:
+  Number of MP2MP Entries : 2
+  Number of P2MP Entries  : 0
+  Total Number of Entries : 2
+
+MLDP Root Count:
+  Total Number of MLDP roots: 2
+
+MLDP Neighbor Count:
+  Total Number of MLDP neighbors: 2
+
+R3#show mpls mldp database
+  * Indicates MLDP recursive forwarding is enabled
+
+LSM ID : 4   Type: MP2MP   Uptime : 00:01:23
+  FEC Root           : 1.1.1.1 
+  Opaque decoded     : [mdt 100:1 0] 
+  Opaque length      : 11 bytes
+  Opaque value       : 02 000B 0001000000000100000000
+  Upstream client(s) :
+    1.1.1.1:0    [Active]
+      Expires        : Never         Path Set ID  : A
+      Out Label (U)  : 20            Interface    : Ethernet1/1*
+      Local Label (D): 22            Next Hop     : 10.0.13.1
+  Replication client(s): 
+    2.2.2.2:0 
+      Uptime         : 00:01:23      Path Set ID  : B
+      Out label (D)  : 23            Interface    : Ethernet1/2*
+      Local label (U): 21            Next Hop     : 10.0.23.2
+
+LSM ID : 1   Type: MP2MP   Uptime : 00:40:20
+  FEC Root           : 3.3.3.3 (we are the root)
+  Opaque decoded     : [mdt 100:1 0] 
+  Opaque length      : 11 bytes
+  Opaque value       : 02 000B 0001000000000100000000
+  Upstream client(s) :
+    None
+      Expires        : N/A           Path Set ID  : 1
+  Replication client(s): 
+    1.1.1.1:0 
+      Uptime         : 00:40:20      Path Set ID  : 2
+      Out label (D)  : 22            Interface    : Ethernet1/1*
+      Local label (U): 17            Next Hop     : 10.0.13.1
+    2.2.2.2:0 
+      Uptime         : 00:01:23      Path Set ID  : 9
+      Out label (D)  : 22            Interface    : Ethernet1/2*
+      Local label (U): 20            Next Hop     : 10.0.23.2
+
+R3#show ip multicast vrf MCAST mpls vif
+
+Interface   Next-hop             Application     Ref-Count   Table / VRF name
+R3#
+R3#show mpls ldp neighbor
+    Peer LDP Ident: 1.1.1.1:0; Local LDP Ident 3.3.3.3:0
+	TCP connection: 1.1.1.1.646 - 3.3.3.3.35438
+	State: Oper; Msgs sent/rcvd: 63/68; Downstream
+	Up time: 00:40:20
+	LDP discovery sources:
+	  Ethernet1/1, Src IP addr: 10.0.13.1
+        Addresses bound to peer LDP Ident:
+          1.1.1.1         10.0.13.1       
+    Peer LDP Ident: 2.2.2.2:0; Local LDP Ident 3.3.3.3:0
+	TCP connection: 2.2.2.2.646 - 3.3.3.3.48218
+	State: Oper; Msgs sent/rcvd: 12/12; Downstream
+	Up time: 00:01:23
+	LDP discovery sources:
+	  Ethernet1/2, Src IP addr: 10.0.23.2
+        Addresses bound to peer LDP Ident:
+          10.0.12.2       2.2.2.2         10.0.23.2       
+R3#show mpls forwarding-table
+Local      Outgoing   Prefix           Bytes Label   Outgoing   Next Hop    
+Label      Label      or Tunnel Id     Switched      interface              
+16         Pop Label  1.1.1.1/32       10191         Et1/1      10.0.13.1   
+17         22         [mdt 100:1 0]    334           Et1/2      10.0.23.2   
+18         Pop Label  2.2.2.2/32       12631         Et1/2      10.0.23.2   
+19         Pop Label  10.0.12.0/24     0             Et1/2      10.0.23.2   
+20         22         [mdt 100:1 0]    224           Et1/1      10.0.13.1   
+21         20         [mdt 100:1 0]    0             Et1/1      10.0.13.1   
+22         23         [mdt 100:1 0]    0             Et1/2      10.0.23.2   
+R3#show mpls interfaces
+Interface              IP            Tunnel   BGP Static Operational
+Ethernet1/1            Yes (ldp)     No       No  No     Yes        
+Ethernet1/2            Yes (ldp)     No       No  No     Yes        
+R3#show bgp ipv4 unicast summary
+% BGP not active
+
+R3#show bgp ipv4 unicast neigh
+% BGP not active
+
+R3#show bgp vpnv4 unicast all
+% BGP not active
+
+R3#show ip ospf nei
+
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+2.2.2.2           0   FULL/  -        00:00:20    10.0.23.2       Ethernet1/2
+1.1.1.1           0   FULL/  -        00:00:28    10.0.13.1       Ethernet1/1
+R3#show ip osp inter
+Loopback0 is up, line protocol is up 
+  Internet Address 3.3.3.3/32, Area 0, Attached via Network Statement
+  Process ID 1, Router ID 3.3.3.3, Network Type LOOPBACK, Cost: 1
+  Topology-MTID    Cost    Disabled    Shutdown      Topology Name
+        0           1         no          no            Base
+  Loopback interface is treated as a stub Host
+Ethernet1/2 is up, line protocol is up 
+  Internet Address 10.0.23.3/24, Area 0, Attached via Network Statement
+  Process ID 1, Router ID 3.3.3.3, Network Type POINT_TO_POINT, Cost: 10
+  Topology-MTID    Cost    Disabled    Shutdown      Topology Name
+        0           10        no          no            Base
+  Transmit Delay is 1 sec, State POINT_TO_POINT
+  Timer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5
+    oob-resync timeout 40
+    Hello due in 00:00:03
+  Supports Link-local Signaling (LLS)
+  Cisco NSF helper support enabled
+  IETF NSF helper support enabled
+  Index 2/2, flood queue length 0
+  Next 0x0(0)/0x0(0)
+  Last flood scan length is 1, maximum is 1
+  Last flood scan time is 0 msec, maximum is 0 msec
+  Neighbor Count is 1, Adjacent neighbor count is 1 
+    Adjacent with neighbor 2.2.2.2
+  Suppress hello for 0 neighbor(s)
+Ethernet1/1 is up, line protocol is up 
+  Internet Address 10.0.13.3/24, Area 0, Attached via Network Statement
+  Process ID 1, Router ID 3.3.3.3, Network Type POINT_TO_POINT, Cost: 10
+  Topology-MTID    Cost    Disabled    Shutdown      Topology Name
+        0           10        no          no            Base
+  Transmit Delay is 1 sec, State POINT_TO_POINT
+  Timer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5
+    oob-resync timeout 40
+    Hello due in 00:00:06
+  Supports Link-local Signaling (LLS)
+  Cisco NSF helper support enabled
+  IETF NSF helper support enabled
+  Index 1/1, flood queue length 0
+  Next 0x0(0)/0x0(0)
+  Last flood scan length is 1, maximum is 1
+  Last flood scan time is 0 msec, maximum is 4 msec
+  Neighbor Count is 1, Adjacent neighbor count is 1 
+    Adjacent with neighbor 1.1.1.1
+  Suppress hello for 0 neighbor(s)
+R3#show ip inter brie
+Interface              IP-Address      OK? Method Status                Protocol
+FastEthernet0/0        unassigned      YES NVRAM  administratively down down    
+Ethernet1/0            unassigned      YES NVRAM  administratively down down    
+Ethernet1/1            10.0.13.3       YES NVRAM  up                    up      
+Ethernet1/2            10.0.23.3       YES NVRAM  up                    up      
+Ethernet1/3            unassigned      YES NVRAM  administratively down down    
+Ethernet2/0            unassigned      YES NVRAM  administratively down down    
+Ethernet2/1            unassigned      YES NVRAM  administratively down down    
+Ethernet2/2            unassigned      YES NVRAM  administratively down down    
+Ethernet2/3            unassigned      YES NVRAM  administratively down down    
+Loopback0              3.3.3.3         YES NVRAM  up                    up      
+R3#
+R3#

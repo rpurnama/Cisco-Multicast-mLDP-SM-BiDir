@@ -1,0 +1,272 @@
+=~=~=~=~=~=~=~=~=~=~=~= PuTTY log 2024.07.10 12:26:43 =~=~=~=~=~=~=~=~=~=~=~=
+]0;CE-1
+CE-1>ena
+Password: 
+CE-1#term le 0
+CE-1#
+CE-1#show run
+Building configuration...
+
+Current configuration : 1074 bytes
+!
+! Last configuration change at 10:52:29 WIB Wed Jul 10 2024
+!
+version 15.0
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname CE-1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable secret 5 $1$QEKz$uVXtmxgO4SFSr6Ziz0Z8o1
+!
+username netadmin privilege 15 password 0 admin123
+no aaa new-model
+clock timezone WIB 7
+!
+ip cef
+no ip domain-lookup
+!
+ip multicast-routing 
+no ipv6 cef
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 101.101.101.101 255.255.255.255
+ ip pim sparse-mode
+ shutdown
+!
+interface Ethernet0/0
+ ip address 192.168.1.100 255.255.255.0
+ ip pim sparse-mode
+ ip igmp join-group 224.2.2.2
+!
+interface Ethernet0/1
+ no ip address
+ shutdown
+!
+interface Ethernet0/2
+ no ip address
+ shutdown
+!
+interface Ethernet0/3
+ no ip address
+ shutdown
+!
+!
+ip forward-protocol nd
+no ip http server
+ip route 0.0.0.0 0.0.0.0 192.168.1.1
+!
+ip pim bidir-enable
+ip pim rp-address 101.101.101.101
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ login local
+ transport input telnet
+!
+end
+
+CE-1#show cdp nei
+Capability Codes: R - Router, T - Trans Bridge, B - Source Route Bridge
+                  S - Switch, H - Host, I - IGMP, r - Repeater, P - Phone, 
+                  D - Remote, C - CVTA, M - Two-port Mac Relay 
+
+Device ID        Local Intrfce     Holdtme    Capability  Platform  Port ID
+R1               Eth 0/0           147               R    7206VXR   Eth 2/0
+
+CE-1#show ip mroute
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry, E - Extranet,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report, 
+       Z - Multicast Tunnel, z - MDT-data group sender, 
+       Y - Joined MDT-data group, y - Sending to MDT-data group, 
+       V - RD & Vector, v - Vector
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 224.2.2.2), 03:01:22/00:02:12, RP 101.101.101.101, flags: SJPCL
+  Incoming interface: Ethernet0/0, RPF nbr 192.168.1.1
+  Outgoing interface list: Null
+
+(*, 224.0.1.40), 03:01:21/00:02:09, RP 101.101.101.101, flags: SJPCL
+  Incoming interface: Ethernet0/0, RPF nbr 192.168.1.1
+  Outgoing interface list: Null
+
+CE-1#show ip igmp interface
+Loopback0 is administratively down, line protocol is down
+  Internet address is 101.101.101.101/32
+  IGMP is enabled on interface
+  Current IGMP host version is 2
+  Current IGMP router version is 2
+  IGMP query interval is 60 seconds
+  IGMP configured query interval is 60 seconds
+  IGMP querier timeout is 120 seconds
+  IGMP configured querier timeout is 120 seconds
+  IGMP max query response time is 10 seconds
+  Last member query count is 2
+  Last member query response interval is 1000 ms
+  Inbound IGMP access group is not set
+  IGMP activity: 1 joins, 1 leaves
+  Multicast routing is enabled on interface
+  Multicast TTL threshold is 0
+  Multicast designated router (DR) is 0.0.0.0  
+  IGMP querying router is 101.101.101.101 (this system)
+  No multicast groups joined by this system
+Ethernet0/0 is up, line protocol is up
+  Internet address is 192.168.1.100/24
+  IGMP is enabled on interface
+  Current IGMP host version is 2
+  Current IGMP router version is 2
+  IGMP query interval is 60 seconds
+  IGMP configured query interval is 60 seconds
+  IGMP querier timeout is 120 seconds
+  IGMP configured querier timeout is 120 seconds
+  IGMP max query response time is 10 seconds
+  Last member query count is 2
+  Last member query response interval is 1000 ms
+  Inbound IGMP access group is not set
+  IGMP activity: 2 joins, 0 leaves
+  Multicast routing is enabled on interface
+  Multicast TTL threshold is 0
+  Multicast designated router (DR) is 192.168.1.100 (this system)
+  IGMP querying router is 192.168.1.1  
+  Multicast groups joined by this system (number of users):
+      224.2.2.2(1)  224.0.1.40(1)
+CE-1#show ip pim neighbor
+PIM Neighbor Table
+Mode: B - Bidir Capable, DR - Designated Router, N - Default DR Priority,
+      P - Proxy Capable, S - State Refresh Capable, G - GenID Capable
+Neighbor          Interface                Uptime/Expires    Ver   DR
+Address                                                            Prio/Mode
+192.168.1.1       Ethernet0/0              01:11:27/00:01:07 v2    1 / S P G
+CE-1#show ip pim interface
+
+Address          Interface                Ver/   Nbr    Query  DR     DR
+                                          Mode   Count  Intvl  Prior
+101.101.101.101  Loopback0                v2/S   0      30     1      0.0.0.0
+192.168.1.100    Ethernet0/0              v2/S   1      30     1      192.168.1.100
+CE-1#show ip route
+Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area 
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2
+       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
+       ia - IS-IS inter area, * - candidate default, U - per-user static route
+       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP
+       + - replicated route, % - next hop override
+
+Gateway of last resort is 192.168.1.1 to network 0.0.0.0
+
+S*    0.0.0.0/0 [1/0] via 192.168.1.1
+      192.168.1.0/24 is variably subnetted, 2 subnets, 2 masks
+C        192.168.1.0/24 is directly connected, Ethernet0/0
+L        192.168.1.100/32 is directly connected, Ethernet0/0
+CE-1#show ip multicast interface
+Loopback0 is administratively down, line protocol is down
+  Internet address is 101.101.101.101/32
+  Multicast routing: enabled
+  Multicast switching: fast
+  Multicast packets in/out: 0/0
+  Multicast TTL threshold: 0
+  Multicast Tagswitching: disabled
+Ethernet0/0 is up, line protocol is up
+  Internet address is 192.168.1.100/24
+  Multicast routing: enabled
+  Multicast switching: fast
+  Multicast packets in/out: 31/1
+  Multicast TTL threshold: 0
+  Multicast Tagswitching: disabled
+CE-1#show ip inter brie
+Interface              IP-Address      OK? Method Status                Protocol
+Ethernet0/0            192.168.1.100   YES NVRAM  up                    up      
+Ethernet0/1            unassigned      YES NVRAM  administratively down down    
+Ethernet0/2            unassigned      YES NVRAM  administratively down down    
+Ethernet0/3            unassigned      YES NVRAM  administratively down down    
+Loopback0              101.101.101.101 YES NVRAM  administratively down down    
+Tunnel0                192.168.1.100   YES unset  up                    up      
+Tunnel1                101.101.101.101 YES unset  up                    down    
+CE-1#
+CE-1#ping 224.2.2.2 re 5
+
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 224.2.2.2, timeout is 2 seconds:
+
+Reply to request 0 from 192.168.1.100, 8 ms
+Reply to request 0 from 192.168.1.100, 80 ms
+Reply to request 1 from 192.168.1.100, 4 ms
+Reply to request 2 from 192.168.1.100, 4 ms
+Reply to request 3 from 192.168.1.100, 4 ms
+Reply to request 4 from 192.168.1.100, 4 ms
+CE-1#
+CE-1#
+CE-1#
+CE-1#show ip mroute
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry, E - Extranet,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report, 
+       Z - Multicast Tunnel, z - MDT-data group sender, 
+       Y - Joined MDT-data group, y - Sending to MDT-data group, 
+       V - RD & Vector, v - Vector
+Outgoing interface flags: H - Hardware switched, A - Assert winner
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 224.2.2.2), 03:02:04/stopped, RP 101.101.101.101, flags: SJPCLF
+  Incoming interface: Ethernet0/0, RPF nbr 192.168.1.1
+  Outgoing interface list: Null
+
+(192.168.1.100, 224.2.2.2), 00:00:26/00:02:41, flags: PLFT
+  Incoming interface: Ethernet0/0, RPF nbr 0.0.0.0
+  Outgoing interface list: Null
+
+(*, 224.0.1.40), 03:02:04/00:01:26, RP 101.101.101.101, flags: SJPCL
+  Incoming interface: Ethernet0/0, RPF nbr 192.168.1.1
+  Outgoing interface list: Null
+
+CE-1#
+CE-1#
+CE-1#show ip pim rp map
+CE-1#show ip pim rp mapping 
+PIM Group-to-RP Mappings
+
+Group(s): 224.0.0.0/4, Static
+    RP: 101.101.101.101 (?)
+CE-1#show ip mroute count
+Use "show ip mfib count" to get better response time for a large number of mroutes.
+
+IP Multicast Statistics
+2 routes using 840 bytes of memory
+2 groups, 0.00 average sources per group
+Forwarding Counts: Pkt Count/Pkts per second/Avg Pkt Size/Kilobits per second
+Other counts: Total/RPF failed/Other drops(OIF-null, rate-limit etc)
+
+Group: 224.2.2.2, Source count: 0, Packets forwarded: 1, Packets received: 1
+  RP-tree: Forwarding: 1/0/100/0, Other: 1/0/0
+
+Group: 224.0.1.40, Source count: 0, Packets forwarded: 0, Packets received: 0
+CE-1#
