@@ -44,19 +44,3 @@ show bgp vpnv4 unicast all
 show ip ospf nei
 show ip osp inter
 show ip inter brie
-
-
-=== Scenario 3 Router ===
-!CE-1
-inter lo101
- no shut
- 
-!PE-1
-inter lo101
- shutdown
- 
-inter eth1/0
- shutdown
- 
- 
-ip route vrf MCAST 101.101.101.101 255.255.255.255 192.168.1.100
