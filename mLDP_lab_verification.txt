@@ -1,0 +1,62 @@
+!CE Verification!
+!====IOS-XE=====!
+term le 0
+
+show run
+show cdp nei
+show ip pim igmp groups
+show ip mroute
+show ip mroute count
+show ip igmp interface
+show ip pim neighbor
+show ip pim interface
+show ip pim rp map
+show ip route
+show ip multicast interface
+show ip inter brie
+
+ping 224.2.2.2 rep 3
+show ip mroute
+show ip mroute count
+
+!P/PE Verification!
+!=====IOS-XE======!
+term le 0
+
+show run
+show cdp nei
+show ip igmp vrf MCAST group
+show ip pim vrf MCAST neigh
+show ip pim vrf MCAST rp map
+show ip mroute vrf MCAST
+show mpls mldp nei
+show mpls mldp root
+show mpls mldp count
+show mpls mldp database
+show ip multicast vrf MCAST mpls vif
+
+show mpls ldp neighbor
+show mpls forwarding-table
+show mpls interfaces
+show bgp ipv4 unicast summary
+show bgp ipv4 unicast neigh
+show bgp vpnv4 unicast all
+show ip ospf nei
+show ip osp inter
+show ip inter brie
+
+
+=== Scenario 3 Router ===
+!CE-1
+inter lo101
+ no shut
+ 
+!PE-1
+inter lo101
+ shutdown
+ 
+inter eth1/0
+ shutdown
+ 
+ 
+ip route vrf MCAST 101.101.101.101 255.255.255.255 192.168.1.100
