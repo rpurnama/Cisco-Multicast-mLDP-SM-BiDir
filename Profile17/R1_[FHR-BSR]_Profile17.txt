@@ -1,0 +1,1031 @@
+R1#
+R1#term le 0
+R1#!Underlay Verification
+R1#show cdp neig
+% CDP is not enabled
+R1#show ip inter brie
+Interface              IP-Address      OK? Method Status                Protocol
+GigabitEthernet1       unassigned      YES NVRAM  administratively down down    
+GigabitEthernet2       10.0.12.1       YES manual up                    up      
+GigabitEthernet3       10.0.13.1       YES manual up                    up      
+GigabitEthernet4       unassigned      YES NVRAM  administratively down down    
+GigabitEthernet5       unassigned      YES NVRAM  administratively down down    
+GigabitEthernet6       unassigned      YES NVRAM  administratively down down    
+GigabitEthernet7       192.168.1.1     YES manual up                    up      
+GigabitEthernet8       unassigned      YES NVRAM  administratively down down    
+Loopback0              1.1.1.1         YES manual up                    up      
+Loopback11             11.11.11.11     YES manual up                    up      
+Lspvif0                1.1.1.1         YES unset  up                    up      
+Tunnel0                11.11.11.11     YES unset  up                    up      
+Tunnel1                11.11.11.11     YES unset  up                    up      
+R1#show ip pim interf
+
+Address          Interface                Ver/   Nbr    Query  DR         DR
+                                          Mode   Count  Intvl  Prior
+1.1.1.1          Loopback0                v2/S   0      30     1          1.1.1.1
+R1#show ip igmp groups
+IGMP Connected Group Membership
+Group Address    Interface                Uptime    Expires   Last Reporter   Group Accounted
+224.0.1.40       Loopback0                02:22:18  00:02:41  1.1.1.1         
+R1#show mpls ldp neighbor
+    Peer LDP Ident: 2.2.2.2:0; Local LDP Ident 1.1.1.1:0
+	TCP connection: 2.2.2.2.54301 - 1.1.1.1.646
+	State: Oper; Msgs sent/rcvd: 166/169; Downstream
+	Up time: 02:17:17
+	LDP discovery sources:
+	  GigabitEthernet2, Src IP addr: 10.0.12.2
+        Addresses bound to peer LDP Ident:
+          10.0.12.2       2.2.2.2         10.0.23.2       
+R1#show mpls forwarding-table
+Local      Outgoing   Prefix           Bytes Label   Outgoing   Next Hop    
+Label      Label      or Tunnel Id     Switched      interface              
+16         No Label   192.168.1.0/24[V]   \
+                                       784           aggregate/MCAST-P17 
+17         Pop Label  11.11.11.11/32[V]   \
+                                       0             aggregate/MCAST-P17 
+18         Pop Label  2.2.2.2/32       0             Gi2        10.0.12.2   
+19         Pop Label  10.0.23.0/24     0             Gi2        10.0.12.2   
+21    [T]  No Label   [gid 65536 (0x00010000)][V]   \
+                                       0             aggregate/MCAST-P17 
+
+[T]	Forwarding through a LSP tunnel.
+	View additional labelling info with the 'detail' option
+R1#show mpls interfaces
+Interface              IP            Tunnel   BGP Static Operational
+GigabitEthernet2       Yes (ldp)     No       No  No     Yes        
+GigabitEthernet3       Yes (ldp)     No       No  No     Yes        
+R1#show bgp ipv4 unicast summary
+BGP router identifier 1.1.1.1, local AS number 100
+BGP table version is 1, main routing table version 1
+
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+2.2.2.2         4          100     153     153        1    0    0 02:12:19        0
+R1#show bgp ipv4 unicast neigh
+BGP neighbor is 2.2.2.2,  remote AS 100, internal link
+  BGP version 4, remote router ID 2.2.2.2
+  BGP state = Established, up for 02:12:19
+  Last read 00:00:19, last write 00:00:12, hold time is 180, keepalive interval is 60 seconds
+  Neighbor sessions:
+    1 active, is not multisession capable (disabled)
+  Neighbor capabilities:
+    Route refresh: advertised and received(new)
+    Four-octets ASN Capability: advertised and received
+    Address family IPv4 Unicast: advertised and received
+    Address family VPNv4 Unicast: advertised and received
+    Address family MVPNv4 Unicast: advertised and received
+    Enhanced Refresh Capability: advertised and received
+    Multisession Capability: 
+    Stateful switchover support enabled: NO for session 1
+  Message statistics:
+    InQ depth is 0
+    OutQ depth is 0
+    
+                         Sent       Rcvd
+    Opens:                  1          1
+    Notifications:          0          0
+    Updates:                5          6
+    Keepalives:           147        146
+    Route Refresh:          0          0
+    Total:                153        153
+  Do log neighbor state changes (via global configuration)
+  Default minimum time between advertisement runs is 0 seconds
+
+ For address family: IPv4 Unicast
+  Session: 2.2.2.2
+  BGP table version 1, neighbor version 1/0
+  Output queue size : 0
+  Index 3, Advertise bit 0
+  3 update-group member
+  Slow-peer detection is disabled
+  Slow-peer split-update-group dynamic is disabled
+                                 Sent       Rcvd
+  Prefix activity:               ----       ----
+    Prefixes Current:               0          0
+    Prefixes Total:                 0          0
+    Implicit Withdraw:              0          0
+    Explicit Withdraw:              0          0
+    Used as bestpath:             n/a          0
+    Used as multipath:            n/a          0
+    Used as secondary:            n/a          0
+
+                                   Outbound    Inbound
+  Local Policy Denied Prefixes:    --------    -------
+    Total:                                0          0
+  Number of NLRIs in the update sent: max 0, min 0
+  Last detected as dynamic slow peer: never
+  Dynamic slow peer recovered: never
+  Refresh Epoch: 1
+  Last Sent Refresh Start-of-rib: never
+  Last Sent Refresh End-of-rib: never
+  Last Received Refresh Start-of-rib: never
+  Last Received Refresh End-of-rib: never
+				       Sent	  Rcvd
+	Refresh activity:	       ----	  ----
+	  Refresh Start-of-RIB          0          0
+	  Refresh End-of-RIB            0          0
+
+ For address family: VPNv4 Unicast
+  Session: 2.2.2.2
+  BGP table version 7, neighbor version 7/0
+  Output queue size : 0
+  Index 1, Advertise bit 0
+  1 update-group member
+  Extended-community attribute sent to this neighbor
+  Slow-peer detection is disabled
+  Slow-peer split-update-group dynamic is disabled
+                                 Sent       Rcvd
+  Prefix activity:               ----       ----
+    Prefixes Current:               2          2 (Consumes 272 bytes)
+    Prefixes Total:                 2          2
+    Implicit Withdraw:              0          0
+    Explicit Withdraw:              0          0
+    Used as bestpath:             n/a          2
+    Used as multipath:            n/a          0
+    Used as secondary:            n/a          0
+
+                                   Outbound    Inbound
+  Local Policy Denied Prefixes:    --------    -------
+    Bestpath from this peer:              2        n/a
+    AF Permit Check:                      2        n/a
+    Total:                                4          0
+  Number of NLRIs in the update sent: max 2, min 0
+  Last detected as dynamic slow peer: never
+  Dynamic slow peer recovered: never
+  Refresh Epoch: 1
+  Last Sent Refresh Start-of-rib: never
+  Last Sent Refresh End-of-rib: never
+  Last Received Refresh Start-of-rib: never
+  Last Received Refresh End-of-rib: never
+				       Sent	  Rcvd
+	Refresh activity:	       ----	  ----
+	  Refresh Start-of-RIB          0          0
+	  Refresh End-of-RIB            0          0
+
+ For address family: MVPNv4 Unicast
+  Session: 2.2.2.2
+  BGP table version 18, neighbor version 12/18
+  Output queue size : 0
+  Index 2, Advertise bit 0
+  2 update-group member
+  Community attribute sent to this neighbor
+  Extended-community attribute sent to this neighbor
+  Slow-peer detection is disabled
+  Slow-peer split-update-group dynamic is disabled
+                                 Sent       Rcvd
+  Prefix activity:               ----       ----
+    Prefixes Current:               1          1 (Consumes 136 bytes)
+    Prefixes Total:                 1          1
+    Implicit Withdraw:              0          0
+    Explicit Withdraw:              0          0
+    Used as bestpath:             n/a          1
+    Used as multipath:            n/a          0
+    Used as secondary:            n/a          0
+
+                                   Outbound    Inbound
+  Local Policy Denied Prefixes:    --------    -------
+    Bestpath from this peer:              1        n/a
+    AF Permit Check:                      1        n/a
+    Total:                                2          0
+  Number of NLRIs in the update sent: max 1, min 0
+  Last detected as dynamic slow peer: never
+  Dynamic slow peer recovered: never
+  Refresh Epoch: 1
+  Last Sent Refresh Start-of-rib: never
+  Last Sent Refresh End-of-rib: never
+  Last Received Refresh Start-of-rib: never
+  Last Received Refresh End-of-rib: never
+				       Sent	  Rcvd
+	Refresh activity:	       ----	  ----
+	  Refresh Start-of-RIB          0          0
+	  Refresh End-of-RIB            0          0
+
+  Address tracking is enabled, the RIB does have a route to 2.2.2.2
+  Route to peer address reachability Up: 1; Down: 0
+    Last notification 02:17:19
+  Connections established 3; dropped 2
+  Last reset 02:12:19, due to Peer closed the session of session 1
+  Interface associated: (none) (peering address NOT in same link)
+  Transport(tcp) path-mtu-discovery is enabled
+  Graceful-Restart is disabled
+  SSO is disabled
+Connection state is ESTAB, I/O status: 1, unread input bytes: 0            
+Connection is ECN Disabled, Mininum incoming TTL 0, Outgoing TTL 255
+Local host: 1.1.1.1, Local port: 179
+Foreign host: 2.2.2.2, Foreign port: 40975
+Connection tableid (VRF): 0
+Maximum output segment queue size: 50
+
+Enqueued packets for retransmit: 0, input: 0  mis-ordered: 0 (0 bytes)
+
+Event Timers (current time is 0xA64CEF):
+Timer          Starts    Wakeups            Next
+Retrans           154          5             0x0
+TimeWait            0          0             0x0
+AckHold           150        144             0x0
+SendWnd             0          0             0x0
+KeepAlive           0          0             0x0
+GiveUp              0          0             0x0
+PmtuAger            0          0             0x0
+DeadWait            0          0             0x0
+Linger              0          0             0x0
+ProcessQ            0          0             0x0
+
+iss: 2506877833  snduna: 2506881000  sndnxt: 2506881000
+irs: 4050893196  rcvnxt: 4050896419
+
+sndwnd:  16023  scale:      0  maxrcvwnd:  16384
+rcvwnd:  15966  scale:      0  delrcvwnd:    418
+
+SRTT: 1000 ms, RTTO: 1003 ms, RTV: 3 ms, KRTT: 0 ms
+minRTT: 1 ms, maxRTT: 1652 ms, ACK hold: 200 ms
+uptime: 7939279 ms, Sent idletime: 12621 ms, Receive idletime: 12418 ms 
+Status Flags: passive open, gen tcbs
+Option Flags: nagle, path mtu capable
+IP Precedence value : 6
+
+Datagrams (max data segment is 1396 bytes):
+Rcvd: 309 (out of order: 0), with data: 152, total data bytes: 3222
+Sent: 306 (retransmit: 5, fastretransmit: 0, partialack: 0, Second Congestion: 0), with data: 151, total data bytes: 3166
+
+ Packets received in fast path: 0, fast processed: 0, slow path: 0
+ fast lock acquisition failures: 0, slow path: 0
+TCP Semaphore      0x7F4DAD289AB8  FREE 
+
+R1#show bgp vpnv4 unicast all
+BGP table version is 7, local router ID is 1.1.1.1
+Status codes: s suppressed, d damped, h history, * valid, > best, i - internal, 
+              r RIB-failure, S Stale, m multipath, b backup-path, f RT-Filter, 
+              x best-external, a additional-path, c RIB-compressed, 
+              t secondary path, L long-lived-stale,
+Origin codes: i - IGP, e - EGP, ? - incomplete
+RPKI validation codes: V valid, I invalid, N Not found
+
+     Network          Next Hop            Metric LocPrf Weight Path
+Route Distinguisher: 100:2 (default for vrf MCAST-P17)
+ *>   11.11.11.11/32   0.0.0.0                  0         32768 ?
+ *>i  22.22.22.22/32   2.2.2.2                  0    100      0 ?
+ *>   192.168.1.0      0.0.0.0                  0         32768 ?
+ *>i  192.168.2.0      2.2.2.2                  0    100      0 ?
+R1#show ip ospf nei
+
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+2.2.2.2           0   FULL/  -        00:00:31    10.0.12.2       GigabitEthernet2
+R1#show ip osp inter
+Loopback0 is up, line protocol is up 
+  Internet Address 1.1.1.1/32, Interface ID 16, Area 0
+  Attached via Network Statement
+  Process ID 1, Router ID 1.1.1.1, Network Type LOOPBACK, Cost: 1
+  Topology-MTID    Cost    Disabled    Shutdown      Topology Name
+        0           1         no          no            Base
+  Loopback interface is treated as a stub Host
+GigabitEthernet3 is up, line protocol is up 
+  Internet Address 10.0.13.1/24, Interface ID 9, Area 0
+  Attached via Network Statement
+  Process ID 1, Router ID 1.1.1.1, Network Type POINT_TO_POINT, Cost: 1
+  Topology-MTID    Cost    Disabled    Shutdown      Topology Name
+        0           1         no          no            Base
+  Transmit Delay is 1 sec, State POINT_TO_POINT
+  Timer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5
+    oob-resync timeout 40
+    Hello due in 00:00:05
+  Supports Link-local Signaling (LLS)
+  Cisco NSF helper support enabled
+  IETF NSF helper support enabled
+  Can be protected by per-prefix Loop-Free FastReroute
+  Can be used for per-prefix Loop-Free FastReroute repair paths
+  Not Protected by per-prefix TI-LFA
+  Index 1/2/2, flood queue length 0
+  Next 0x0(0)/0x0(0)/0x0(0)
+  Last flood scan length is 0, maximum is 0
+  Last flood scan time is 0 msec, maximum is 0 msec
+  Neighbor Count is 0, Adjacent neighbor count is 0 
+  Suppress hello for 0 neighbor(s)
+GigabitEthernet2 is up, line protocol is up 
+  Internet Address 10.0.12.1/24, Interface ID 8, Area 0
+  Attached via Network Statement
+  Process ID 1, Router ID 1.1.1.1, Network Type POINT_TO_POINT, Cost: 1
+  Topology-MTID    Cost    Disabled    Shutdown      Topology Name
+        0           1         no          no            Base
+  Transmit Delay is 1 sec, State POINT_TO_POINT
+  Timer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5
+    oob-resync timeout 40
+    Hello due in 00:00:07
+  Supports Link-local Signaling (LLS)
+  Cisco NSF helper support enabled
+  IETF NSF helper support enabled
+  Can be protected by per-prefix Loop-Free FastReroute
+  Can be used for per-prefix Loop-Free FastReroute repair paths
+  Not Protected by per-prefix TI-LFA
+  Index 1/1/1, flood queue length 0
+  Next 0x0(0)/0x0(0)/0x0(0)
+  Last flood scan length is 1, maximum is 1
+  Last flood scan time is 0 msec, maximum is 1 msec
+  Neighbor Count is 1, Adjacent neighbor count is 1 
+    Adjacent with neighbor 2.2.2.2
+  Suppress hello for 0 neighbor(s)
+R1#show ip inter brie
+Interface              IP-Address      OK? Method Status                Protocol
+GigabitEthernet1       unassigned      YES NVRAM  administratively down down    
+GigabitEthernet2       10.0.12.1       YES manual up                    up      
+GigabitEthernet3       10.0.13.1       YES manual up                    up      
+GigabitEthernet4       unassigned      YES NVRAM  administratively down down    
+GigabitEthernet5       unassigned      YES NVRAM  administratively down down    
+GigabitEthernet6       unassigned      YES NVRAM  administratively down down    
+GigabitEthernet7       192.168.1.1     YES manual up                    up      
+GigabitEthernet8       unassigned      YES NVRAM  administratively down down    
+Loopback0              1.1.1.1         YES manual up                    up      
+Loopback11             11.11.11.11     YES manual up                    up      
+Lspvif0                1.1.1.1         YES unset  up                    up      
+Tunnel0                11.11.11.11     YES unset  up                    up      
+Tunnel1                11.11.11.11     YES unset  up                    up      
+
+!=============================AFTER STREAMING=============================
+R1#
+R1#!MLDP Verification
+R1#show mpls mldp nei
+
+ MLDP peer ID    : 2.2.2.2:0, uptime 02:17:17 Up, 
+  Target Adj     : No
+  Session hndl   : 1
+  Upstream count : 1
+  Branch count   : 1
+  Path count     : 1
+  Path(s)        : 10.0.12.2         LDP GigabitEthernet2
+  Nhop count     : 1
+  Nhop list      : 10.0.12.2 
+R1#show mpls mldp root
+
+ Root node    : 1.1.1.1 (We are the root)
+  Metric      : 0
+  Distance    : 0
+  Interface   : Loopback0 (via unicast RT)
+  FEC count   : 1
+  Path count  : 1
+  Path(s)     : 1.1.1.1          LDP nbr: none              Loopback0
+
+ Root node    : 2.2.2.2 
+  Metric      : 2
+  Distance    : 110
+  Interface   : GigabitEthernet2 (via unicast RT)
+  FEC count   : 1
+  Path count  : 1
+  Path(s)     : 10.0.12.2        LDP nbr: 2.2.2.2:0         GigabitEthernet2
+R1#show mpls mldp count
+MLDP Database Summary:
+  Number of MP2MP Entries : 0
+  Number of P2MP Entries  : 2
+  Total Number of Entries : 2
+
+MLDP Root Count:
+  Total Number of MLDP roots: 2
+
+MLDP Neighbor Count:
+  Total Number of MLDP neighbors: 1
+
+R1#show mpls mldp database
+  * For interface indicates MLDP recursive forwarding is enabled
+  * For RPF-ID indicates wildcard value
+  > Indicates it is a Primary MLDP MDT Branch
+
+LSM ID : 1   Type: P2MP   Uptime : 02:43:40
+  FEC Root           : 1.1.1.1 (we are the root)
+  Opaque decoded     : [gid 65536 (0x00010000)] 
+  Opaque length      : 4 bytes
+  Opaque value       : 01 0004 00010000
+  Upstream client(s) :
+    None
+      Expires        : N/A           Path Set ID  : 1
+  Replication client(s): 
+>   MDT  (VRF MCAST-P17)
+      Uptime         : 02:43:40      Path Set ID  : None
+      Interface      : Lspvif0       RPF-ID       : *
+    2.2.2.2:0 
+      Uptime         : 02:12:19      Path Set ID  : None
+      Out label (D)  : 19            Interface    : GigabitEthernet2*
+      Local label (U): None          Next Hop     : 10.0.12.2
+
+LSM ID : 3   Type: P2MP   Uptime : 02:12:19
+  FEC Root           : 2.2.2.2 
+  Opaque decoded     : [gid 65536 (0x00010000)] 
+  Opaque length      : 4 bytes
+  Opaque value       : 01 0004 00010000
+  Upstream client(s) :
+    2.2.2.2:0    [Active]
+      Expires        : Never         Path Set ID  : 3
+      Out Label (U)  : None          Interface    : GigabitEthernet2*
+      Local Label (D): 21            Next Hop     : 10.0.12.2
+  Replication client(s): 
+    MDT  (VRF MCAST-P17)
+      Uptime         : 02:12:19      Path Set ID  : None
+      Interface      : Lspvif0       RPF-ID       : 0x1
+
+R1#
+R1#!Multicast Verification
+R1#show ip igmp vrf MCAST-P17 groups
+IGMP Connected Group Membership
+Group Address    Interface                Uptime    Expires   Last Reporter   Group Accounted
+224.0.1.40       GigabitEthernet7         02:44:58  00:02:01  192.168.1.1     
+R1#show ip igmp vrf MCAST-P17 interface
+GigabitEthernet7 is up, line protocol is up
+  Internet address is 192.168.1.1/24
+  IGMP is enabled on interface
+  Multicast Routing table MCAST-P17
+  Current IGMP host version is 2
+  Current IGMP router version is 2
+  IGMP query interval is 60 seconds
+  IGMP configured query interval is 60 seconds
+  IGMP querier timeout is 120 seconds
+  IGMP configured querier timeout is 120 seconds
+  IGMP max query response time is 10 seconds
+  Last member query count is 2
+  Last member query response interval is 1000 ms
+  Inbound IGMP access group is not set
+  IGMP activity: 1 joins, 0 leaves
+  Multicast routing is enabled on interface
+  Multicast TTL threshold is 0
+  Multicast designated router (DR) is 192.168.1.1 (this system)
+  IGMP querying router is 192.168.1.1 (this system)
+  Multicast groups joined by this system (number of users):
+      224.0.1.40(1)
+Lspvif0 is up, line protocol is up
+  Interface is unnumbered. Using address of Loopback0 (1.1.1.1)
+  IGMP is enabled on interface
+  Multicast Routing table MCAST-P17
+  Current IGMP host version is 2
+  Current IGMP router version is 2
+  IGMP query interval is 60 seconds
+  IGMP configured query interval is 60 seconds
+  IGMP querier timeout is 120 seconds
+  IGMP configured querier timeout is 120 seconds
+  IGMP max query response time is 10 seconds
+  Last member query count is 2
+  Last member query response interval is 1000 ms
+  Inbound IGMP access group is not set
+  IGMP activity: 0 joins, 0 leaves
+  Multicast routing is enabled on interface
+  Multicast TTL threshold is 0
+  Multicast designated router (DR) is 2.2.2.2  
+  IGMP querying router is 1.1.1.1 (this system)
+  No multicast groups joined by this system
+Loopback11 is up, line protocol is up
+  Internet address is 11.11.11.11/32
+  IGMP is enabled on interface
+  Multicast Routing table MCAST-P17
+  Current IGMP host version is 2
+  Current IGMP router version is 2
+  IGMP query interval is 60 seconds
+  IGMP configured query interval is 60 seconds
+  IGMP querier timeout is 120 seconds
+  IGMP configured querier timeout is 120 seconds
+  IGMP max query response time is 10 seconds
+  Last member query count is 2
+  Last member query response interval is 1000 ms
+  Inbound IGMP access group is not set
+  IGMP activity: 0 joins, 0 leaves
+  Multicast routing is enabled on interface
+  Multicast TTL threshold is 0
+  Multicast designated router (DR) is 11.11.11.11 (this system)
+  IGMP querying router is 11.11.11.11 (this system)
+  No multicast groups joined by this system
+R1#show ip pim vrf MCAST-P17 neighbor
+PIM Neighbor Table
+Mode: B - Bidir Capable, DR - Designated Router, N - Default DR Priority,
+      P - Proxy Capable, S - State Refresh Capable, G - GenID Capable,
+      L - DR Load-balancing Capable
+Neighbor          Interface                Uptime/Expires    Ver   DR
+Address                                                            Prio/Mode
+2.2.2.2           Lspvif0                  02:12:39/00:01:27 v2    1 / DR S P G
+R1#show ip pim vrf MCAST-P17 interface
+
+Address          Interface                Ver/   Nbr    Query  DR         DR
+                                          Mode   Count  Intvl  Prior
+192.168.1.1      GigabitEthernet7         v2/S   0      30     1          192.168.1.1
+1.1.1.1          Lspvif0                  v2/S   1      30     1          2.2.2.2
+11.11.11.11      Loopback11               v2/S   0      30     1          11.11.11.11
+R1#show ip pim vrf MCAST-P17 rp map
+PIM Group-to-RP Mappings
+This system is a candidate RP (v2)
+This system is the Bootstrap Router (v2)
+
+Group(s) 224.0.0.0/4
+  RP 11.11.11.11 (?), v2
+    Info source: 11.11.11.11 (?), via bootstrap, priority 1, holdtime 150
+         Uptime: 02:32:27, expires: 00:01:58
+R1#show ip pim vrf MCAST-P17 rp
+R1#show ip pim vrf MCAST-P17 bsr-router
+PIMv2 Bootstrap information
+This system is the Bootstrap Router (BSR)
+  BSR address: 11.11.11.11 (?)
+  Uptime:      02:33:12, BSR Priority: 1, Hash mask length: 0
+  Next bootstrap message in 00:00:50
+  Candidate RP: 11.11.11.11(Loopback11)
+    Holdtime 150 seconds
+    Advertisement interval 60 seconds
+    Next advertisement in 00:00:32
+    Candidate RP priority : 1
+R1#show ip mroute vrf MCAST-P17 
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry, E - Extranet,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report, 
+       Z - Multicast Tunnel, z - MDT-data group sender, 
+       Y - Joined MDT-data group, y - Sending to MDT-data group, 
+       G - Received BGP C-Mroute, g - Sent BGP C-Mroute, 
+       N - Received BGP Shared-Tree Prune, n - BGP C-Mroute suppressed, 
+       Q - Received BGP S-A Route, q - Sent BGP S-A Route, 
+       V - RD & Vector, v - Vector, p - PIM Joins on route, 
+       x - VxLAN group, c - PFP-SA cache created entry
+Outgoing interface flags: H - Hardware switched, A - Assert winner, p - PIM Join
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 224.0.1.40), 01:36:00/00:02:01, RP 0.0.0.0, flags: DCL
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    GigabitEthernet7, Forward/Sparse, 01:36:00/00:02:01
+
+R1#show ip mroute vrf MCAST-P17 count
+Use "show ip mfib count" to get better response time for a large number of mroutes.
+
+IP Multicast Statistics
+1 routes using 1102 bytes of memory
+1 groups, 0.00 average sources per group
+Forwarding Counts: Pkt Count/Pkts per second/Avg Pkt Size/Kilobits per second
+Other counts: Total/RPF failed/Other drops(OIF-null, rate-limit etc)
+
+Group: 224.0.1.40, Source count: 0, Packets forwarded: 0, Packets received: 0
+R1#
+R1#
+R1#
+R1#!Multicast Verification
+R1#show ip igmp vrf MCAST-P17 groups
+IGMP Connected Group Membership
+Group Address    Interface                Uptime    Expires   Last Reporter   Group Accounted
+224.0.1.40       GigabitEthernet7         02:50:27  00:02:38  192.168.1.1     
+R1#show ip igmp vrf MCAST-P17 interface
+GigabitEthernet7 is up, line protocol is up
+  Internet address is 192.168.1.1/24
+  IGMP is enabled on interface
+  Multicast Routing table MCAST-P17
+  Current IGMP host version is 2
+  Current IGMP router version is 2
+  IGMP query interval is 60 seconds
+  IGMP configured query interval is 60 seconds
+  IGMP querier timeout is 120 seconds
+  IGMP configured querier timeout is 120 seconds
+  IGMP max query response time is 10 seconds
+  Last member query count is 2
+  Last member query response interval is 1000 ms
+  Inbound IGMP access group is not set
+  IGMP activity: 1 joins, 0 leaves
+  Multicast routing is enabled on interface
+  Multicast TTL threshold is 0
+  Multicast designated router (DR) is 192.168.1.1 (this system)
+  IGMP querying router is 192.168.1.1 (this system)
+  Multicast groups joined by this system (number of users):
+      224.0.1.40(1)
+Lspvif0 is up, line protocol is up
+  Interface is unnumbered. Using address of Loopback0 (1.1.1.1)
+  IGMP is enabled on interface
+  Multicast Routing table MCAST-P17
+  Current IGMP host version is 2
+  Current IGMP router version is 2
+  IGMP query interval is 60 seconds
+  IGMP configured query interval is 60 seconds
+  IGMP querier timeout is 120 seconds
+  IGMP configured querier timeout is 120 seconds
+  IGMP max query response time is 10 seconds
+  Last member query count is 2
+  Last member query response interval is 1000 ms
+  Inbound IGMP access group is not set
+  IGMP activity: 0 joins, 0 leaves
+  Multicast routing is enabled on interface
+  Multicast TTL threshold is 0
+  Multicast designated router (DR) is 2.2.2.2  
+  IGMP querying router is 1.1.1.1 (this system)
+  No multicast groups joined by this system
+Loopback11 is up, line protocol is up
+  Internet address is 11.11.11.11/32
+  IGMP is enabled on interface
+  Multicast Routing table MCAST-P17
+  Current IGMP host version is 2
+  Current IGMP router version is 2
+  IGMP query interval is 60 seconds
+  IGMP configured query interval is 60 seconds
+  IGMP querier timeout is 120 seconds
+  IGMP configured querier timeout is 120 seconds
+  IGMP max query response time is 10 seconds
+  Last member query count is 2
+  Last member query response interval is 1000 ms
+  Inbound IGMP access group is not set
+  IGMP activity: 0 joins, 0 leaves
+  Multicast routing is enabled on interface
+  Multicast TTL threshold is 0
+  Multicast designated router (DR) is 11.11.11.11 (this system)
+  IGMP querying router is 11.11.11.11 (this system)
+  No multicast groups joined by this system
+R1#show ip pim vrf MCAST-P17 neighbor
+PIM Neighbor Table
+Mode: B - Bidir Capable, DR - Designated Router, N - Default DR Priority,
+      P - Proxy Capable, S - State Refresh Capable, G - GenID Capable,
+      L - DR Load-balancing Capable
+Neighbor          Interface                Uptime/Expires    Ver   DR
+Address                                                            Prio/Mode
+2.2.2.2           Lspvif0                  02:18:07/00:01:24 v2    1 / DR S P G
+R1#show ip pim vrf MCAST-P17 interface
+
+Address          Interface                Ver/   Nbr    Query  DR         DR
+                                          Mode   Count  Intvl  Prior
+192.168.1.1      GigabitEthernet7         v2/S   0      30     1          192.168.1.1
+1.1.1.1          Lspvif0                  v2/S   1      30     1          2.2.2.2
+11.11.11.11      Loopback11               v2/S   0      30     1          11.11.11.11
+R1#show ip pim vrf MCAST-P17 rp map
+PIM Group-to-RP Mappings
+This system is a candidate RP (v2)
+This system is the Bootstrap Router (v2)
+
+Group(s) 224.0.0.0/4
+  RP 11.11.11.11 (?), v2
+    Info source: 11.11.11.11 (?), via bootstrap, priority 1, holdtime 150
+         Uptime: 02:37:56, expires: 00:01:30
+R1#show ip pim vrf MCAST-P17 rp
+Group: 239.1.1.1, RP: 11.11.11.11
+R1#show ip pim vrf MCAST-P17 bsr-router
+PIMv2 Bootstrap information
+This system is the Bootstrap Router (BSR)
+  BSR address: 11.11.11.11 (?)
+  Uptime:      02:38:41, BSR Priority: 1, Hash mask length: 0
+  Next bootstrap message in 00:00:26
+  Candidate RP: 11.11.11.11(Loopback11)
+    Holdtime 150 seconds
+    Advertisement interval 60 seconds
+    Next advertisement in 00:00:03
+    Candidate RP priority : 1
+R1#show ip mroute vrf MCAST-P17 
+IP Multicast Routing Table
+Flags: D - Dense, S - Sparse, B - Bidir Group, s - SSM Group, C - Connected,
+       L - Local, P - Pruned, R - RP-bit set, F - Register flag,
+       T - SPT-bit set, J - Join SPT, M - MSDP created entry, E - Extranet,
+       X - Proxy Join Timer Running, A - Candidate for MSDP Advertisement,
+       U - URD, I - Received Source Specific Host Report, 
+       Z - Multicast Tunnel, z - MDT-data group sender, 
+       Y - Joined MDT-data group, y - Sending to MDT-data group, 
+       G - Received BGP C-Mroute, g - Sent BGP C-Mroute, 
+       N - Received BGP Shared-Tree Prune, n - BGP C-Mroute suppressed, 
+       Q - Received BGP S-A Route, q - Sent BGP S-A Route, 
+       V - RD & Vector, v - Vector, p - PIM Joins on route, 
+       x - VxLAN group, c - PFP-SA cache created entry
+Outgoing interface flags: H - Hardware switched, A - Assert winner, p - PIM Join
+ Timers: Uptime/Expires
+ Interface state: Interface, Next-Hop or VCD, State/Mode
+
+(*, 239.1.1.1), 00:02:00/00:02:49, RP 11.11.11.11, flags: SF
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    Lspvif0, Forward/Sparse, 00:00:40/00:02:49
+
+(192.168.1.100, 239.1.1.1), 00:02:00/00:00:59, flags: FT
+  Incoming interface: GigabitEthernet7, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    Lspvif0, Forward/Sparse, 00:00:40/00:02:49
+
+(*, 224.0.1.40), 01:41:29/00:02:38, RP 0.0.0.0, flags: DCL
+  Incoming interface: Null, RPF nbr 0.0.0.0
+  Outgoing interface list:
+    GigabitEthernet7, Forward/Sparse, 01:41:29/00:02:38
+
+R1#show ip mroute vrf MCAST-P17 count
+Use "show ip mfib count" to get better response time for a large number of mroutes.
+
+IP Multicast Statistics
+3 routes using 3078 bytes of memory
+2 groups, 0.50 average sources per group
+Forwarding Counts: Pkt Count/Pkts per second/Avg Pkt Size/Kilobits per second
+Other counts: Total/RPF failed/Other drops(OIF-null, rate-limit etc)
+
+Group: 239.1.1.1, Source count: 1, Packets forwarded: 3252, Packets received: 11565
+  RP-tree: Forwarding: 0/0/0/0, Other: 0/0/0
+  Source: 192.168.1.100/32, Forwarding: 3252/105/1367/1155, Other: 11565/0/8313
+
+Group: 224.0.1.40, Source count: 0, Packets forwarded: 0, Packets received: 0
+R1#
+R1#
+R1#
+R1#show ip mroute vrf MCAST-P17 count
+Use "show ip mfib count" to get better response time for a large number of mroutes.
+
+IP Multicast Statistics
+3 routes using 3078 bytes of memory
+2 groups, 0.50 average sources per group
+Forwarding Counts: Pkt Count/Pkts per second/Avg Pkt Size/Kilobits per second
+Other counts: Total/RPF failed/Other drops(OIF-null, rate-limit etc)
+
+Group: 239.1.1.1, Source count: 1, Packets forwarded: 4220, Packets received: 12533
+  RP-tree: Forwarding: 0/0/0/0, Other: 0/0/0
+  Source: 192.168.1.100/32, Forwarding: 4220/96/1367/1058, Other: 12533/0/8313
+
+Group: 224.0.1.40, Source count: 0, Packets forwarded: 0, Packets received: 0
+R1#
+R1#
+R1#
+R1#show ip mroute vrf MCAST-P17 count
+Use "show ip mfib count" to get better response time for a large number of mroutes.
+
+IP Multicast Statistics
+3 routes using 3078 bytes of memory
+2 groups, 0.50 average sources per group
+Forwarding Counts: Pkt Count/Pkts per second/Avg Pkt Size/Kilobits per second
+Other counts: Total/RPF failed/Other drops(OIF-null, rate-limit etc)
+
+Group: 239.1.1.1, Source count: 1, Packets forwarded: 5215, Packets received: 13528
+  RP-tree: Forwarding: 0/0/0/0, Other: 0/0/0
+  Source: 192.168.1.100/32, Forwarding: 5215/99/1367/1088, Other: 13528/0/8313
+
+Group: 224.0.1.40, Source count: 0, Packets forwarded: 0, Packets received: 0
+R1#
+R1#
+R1#
+R1#
+R1#
+R1#
+R1#
+R1#
+R1#show run
+Building configuration...
+
+Current configuration : 5432 bytes
+!
+! Last configuration change at 13:41:27 UTC Fri Jul 12 2024
+!
+version 16.9
+service timestamps debug datetime msec
+service timestamps log datetime msec
+platform qfp utilization monitor load 80
+platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition MCAST-P17
+ rd 100:2
+ !
+ address-family ipv4
+  mdt auto-discovery mldp
+  mdt default mpls mldp p2mp
+  route-target export 100:2
+  route-target import 100:2
+ exit-address-family
+!
+enable secret 5 $1$6KiV$766qES617Wwg5gUinhrWW/
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip multicast-routing distributed
+ip multicast-routing vrf MCAST-P17 distributed
+!
+!
+!
+login on-success log
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+! 
+! 
+! 
+! 
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-37389127
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-37389127
+ revocation-check none
+ rsakeypair TP-self-signed-37389127
+!
+!
+crypto pki certificate chain TP-self-signed-37389127
+ certificate self-signed 01
+  3082032C 30820214 A0030201 02020101 300D0609 2A864886 F70D0101 05050030 
+  2F312D30 2B060355 04031324 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 33373338 39313237 301E170D 32343037 31313231 31303238 
+  5A170D33 30303130 31303030 3030305A 302F312D 302B0603 55040313 24494F53 
+  2D53656C 662D5369 676E6564 2D436572 74696669 63617465 2D333733 38393132 
+  37308201 22300D06 092A8648 86F70D01 01010500 0382010F 00308201 0A028201 
+  0100CC75 B9584035 2E24244F 28F969C0 40D26373 586C6AAC 68F0DE74 EC9B8669 
+  6E21830E 1A5705CB 84974C23 F39A014D 018006C6 BFB7B086 527BC453 9D30E35F 
+  6E6BB5C8 872EDB5D 6CAB3109 625047EF 42E3D46F D370720C B58BBA16 E05C112A 
+  F4DB9504 13C03EE6 932683ED F2240800 B108C97A 256F505B 30EFCE38 11D0F4DC 
+  20B8CF02 69EB93BA D0A8C7CD 6A195B53 83A3DCCB 94AD6AF4 1678DB28 E5BAF314 
+  5805C151 ACE89F22 6AB160B0 569F3665 EDAF5B1D DF0D27CE 4E598AA1 20084509 
+  D4A2A7F0 ED03F958 CD0F6777 E97522AA 8F326FE5 F53EAAAC 973F97A7 C84EC207 
+  DBD44561 EA5BAE81 C22CB7A4 3A4EE2E1 FA39946E FDDDB764 D3341C88 02809F79 
+  76D70203 010001A3 53305130 0F060355 1D130101 FF040530 030101FF 301F0603 
+  551D2304 18301680 14E02F80 A6A7C354 BA574FD7 1EE99796 3BE44653 F8301D06 
+  03551D0E 04160414 E02F80A6 A7C354BA 574FD71E E997963B E44653F8 300D0609 
+  2A864886 F70D0101 05050003 82010100 88A0FCED E87E9378 DB5F7CB4 434B6CF2 
+  0CA880B0 47BB679B 4BDB66E0 2068A160 47AB4607 DE77DF6B DF797C20 6B76CC42 
+  B7645CB2 EE654170 D924CD45 F5A6AC41 5B80466A FF3DEA0F 60D0991B FF320960 
+  09E2C2DD 2A49BDEB 8948A846 847FA861 CD29430A 74EDAB2F 84F2E0E1 080BF54A 
+  3B6730DD 5D14EF8C 6A1944AF E08B613C F322ABDF D79C846D 18927295 EA6A2DEC 
+  6EC691D7 3A466B42 D4E82226 843A582D E45ACD85 89AD1C8C 2A3F781D 01EE99A5 
+  3997C227 360652BB 9A2C8BF3 3A541359 44B496A5 F431431B F3AFD2A3 7BE737AC 
+  403DD592 A67FD154 37A29695 A1B20F17 0E49C795 68F2942F DFDCC985 ACDB74EC 
+  E350017E 06219DBF D16EB674 F53F9D2B
+  	quit
+!
+!
+!
+!
+!
+!
+!
+!
+license udi pid CSR1000V sn 93LOGEUIGT3
+no license smart enable
+diagnostic bootup level minimal
+!
+spanning-tree extend system-id
+!
+!
+!
+username netadmin privilege 15 password 0 cisco
+!
+redundancy
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+!
+interface Loopback0
+ ip address 1.1.1.1 255.255.255.255
+ ip pim sparse-mode
+!
+interface Loopback11
+ vrf forwarding MCAST-P17
+ ip address 11.11.11.11 255.255.255.255
+ ip pim sparse-mode
+!
+interface GigabitEthernet1
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet2
+ description # P2P Backbone #
+ ip address 10.0.12.1 255.255.255.0
+ ip ospf network point-to-point
+ negotiation auto
+ mpls ip
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet3
+ description # P2P Backbone #
+ ip address 10.0.13.1 255.255.255.0
+ ip ospf network point-to-point
+ negotiation auto
+ mpls ip
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet4
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet5
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet6
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet7
+ description # To Mcast Server #
+ vrf forwarding MCAST-P17
+ ip address 192.168.1.1 255.255.255.0
+ ip pim sparse-mode
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet8
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+router ospf 1
+ router-id 1.1.1.1
+ network 0.0.0.0 255.255.255.255 area 0
+!
+router bgp 100
+ bgp router-id 1.1.1.1
+ bgp log-neighbor-changes
+ neighbor 2.2.2.2 remote-as 100
+ neighbor 2.2.2.2 update-source Loopback0
+ !
+ address-family ipv4 mvpn
+  neighbor 2.2.2.2 activate
+  neighbor 2.2.2.2 send-community extended
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 2.2.2.2 activate
+  neighbor 2.2.2.2 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf MCAST-P17
+  redistribute connected
+ exit-address-family
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ip pim vrf MCAST-P17 bsr-candidate Loopback11 0 1
+ip pim vrf MCAST-P17 rp-candidate Loopback11 priority 1
+ip pim vrf MCAST-P17 register-source Loopback11
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+line con 0
+ stopbits 1
+line vty 0 4
+ login local
+ transport input telnet ssh
+!
+!
+!
+!
+!
+!
+end
+
+R1#
+R1#
+R1#
+R1#
+R1#

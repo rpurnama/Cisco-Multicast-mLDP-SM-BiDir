@@ -1,0 +1,37 @@
+BEFORE
+======
+
+term le 0
+!Underlay Verification
+show cdp neig
+show ip inter brie
+show ip pim interf
+show ip igmp groups
+show mpls ldp neighbor
+show mpls forwarding-table
+show mpls interfaces
+show bgp ipv4 unicast summary
+show bgp ipv4 unicast neigh
+show bgp vpnv4 unicast all
+show ip ospf nei
+show ip osp inter
+show ip inter brie
+
+!MLDP Verification
+show mpls mldp nei
+show mpls mldp root
+show mpls mldp count
+show mpls mldp database
+
+!Multicast Verification
+show ip igmp vrf MCAST-P17 groups
+show ip igmp vrf MCAST-P17 interface
+show ip pim vrf MCAST-P17 neighbor
+show ip pim vrf MCAST-P17 interface
+show ip pim vrf MCAST-P17 rp map
+show ip pim vrf MCAST-P17 rp
+show ip pim vrf MCAST-P17 bsr-router
+show ip mroute vrf MCAST-P17 
+show ip mroute vrf MCAST-P17 count
+
+show run
