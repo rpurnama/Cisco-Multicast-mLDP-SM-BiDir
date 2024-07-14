@@ -1,0 +1,377 @@
+=~=~=~=~=~=~=~=~=~=~=~= PuTTY log 2024.07.14 12:29:08 =~=~=~=~=~=~=~=~=~=~=~=
+
+R2>ena
+Password: 
+R2#e temr le     term        term le 0
+R2#show run
+Building configuration...
+
+Current configuration : 5752 bytes
+!
+! Last configuration change at 05:09:23 UTC Sun Jul 14 2024
+!
+version 16.9
+service timestamps debug datetime msec
+service timestamps log datetime msec
+platform qfp utilization monitor load 80
+platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R2
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition MCAST-P01
+ rd 100:1
+ vpn id 1000:2000
+ !
+ address-family ipv4
+  mdt default mpls mldp 1.1.1.1
+  route-target export 100:1
+  route-target import 100:1
+ exit-address-family
+!
+vrf definition MCAST-P17
+ rd 100:2
+ !
+ address-family ipv4
+  mdt auto-discovery mldp
+  mdt default mpls mldp p2mp
+  route-target export 100:2
+  route-target import 100:2
+ exit-address-family
+!
+enable secret 5 $1$BlKV$oe81nHgXeUzDrf26qGvhd/
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip multicast-routing distributed
+ip multicast-routing vrf MCAST-P17 distributed
+ip multicast-routing vrf MCAST-P01 distributed
+!
+!
+!
+login on-success log
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+! 
+! 
+! 
+! 
+!
+mpls mldp logging notifications
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-3117534224
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-3117534224
+ revocation-check none
+ rsakeypair TP-self-signed-3117534224
+!
+!
+crypto pki certificate chain TP-self-signed-3117534224
+ certificate self-signed 01
+  30820330 30820218 A0030201 02020101 300D0609 2A864886 F70D0101 05050030 
+  31312F30 2D060355 04031326 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 33313137 35333432 3234301E 170D3234 30373131 32313136 
+  35335A17 0D333030 31303130 30303030 305A3031 312F302D 06035504 03132649 
+  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D33 31313735 
+  33343232 34308201 22300D06 092A8648 86F70D01 01010500 0382010F 00308201 
+  0A028201 010090E7 E32E5822 4A1BEAAB 5DE02EA9 30A1B07C 309A8824 98EEF7A2 
+  DC2C1EE2 9B790DB1 67DC36B6 4F1F68F6 8C2B7A1A 335E6530 CF8EBC52 7C46C556 
+  BBB15DDF 4E99D574 6243ED0C A4957ADC E2BDE6D1 BE951895 5FE1E95C 3F433A87 
+  76D40EB6 9DFED204 25D088B2 B7ACA9ED 881A136F 5206B701 5909313B 54A16AE9 
+  62D50FAC 683AB2F0 1DF56D6E FBE2861F A8064B9A 298C184B 57E7E37C FC7B6CFB 
+  7C9719E1 15B979BF 11E438FE 2A553A27 FBFD0267 21B16901 A010FB1D D0A243FE 
+  94CE1FF4 BF452C8D 3F67C0CD 492CEE09 0B17DB0F 77E51913 0A55EB64 96E53395 
+  8C08CF9E C20477AB 867985D1 707CC63E 4E3BA92F 1BA9625A FF5658A5 82352389 
+  37C417CB B4250203 010001A3 53305130 0F060355 1D130101 FF040530 030101FF 
+  301F0603 551D2304 18301680 147A8357 5AA74A77 DF026CCC 0AD7C4AB 30C65CB9 
+  BC301D06 03551D0E 04160414 7A83575A A74A77DF 026CCC0A D7C4AB30 C65CB9BC 
+  300D0609 2A864886 F70D0101 05050003 82010100 098D544C A8D2AFFA 0383AB5E 
+  6C4AA489 499519FE 64A4C76F DE62172C 5550FBFD 55E0E084 DA7E2116 AFFEDCF7 
+  E2359FB1 D87B08E1 B6D7F0A4 07CAE09B 87810FB4 E6188535 78192773 3803A70C 
+  BB0FFAC2 6FDC975B C8FABFA6 D36BC3E6 EE803F04 002793EB 8659AFC6 29C229E4 
+  3A371FC0 547D256E 2B93A636 DE1C467C DE111ABD 41FEF938 8A23BD6C 60A95DDF 
+  02274AFF 56805B9D 12BBB231 C8AE279C 0B451C2C 601D538E 5F4BFE3A 137313BE 
+  4C710BE3 6DE337A6 252E2C66 CDF633E0 C55FDED5 4772690F 572C9D49 75BC0967 
+  C6F1C5E3 99AA0DC7 4884F099 5A64D493 F554A681 0BDC549C 2E8B37FB 9AF429C0 
+  76359E9F CD0668EA 70A45A55 EDB2662C C222CC51
+  	quit
+!
+!
+!
+!
+!
+!
+!
+!
+license udi pid CSR1000V sn 9LIEYTRKA2J
+no license smart enable
+diagnostic bootup level minimal
+!
+spanning-tree extend system-id
+!
+!
+!
+username netadmin privilege 15 password 0 cisco
+!
+redundancy
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+!
+interface Loopback0
+ ip address 2.2.2.2 255.255.255.255
+ ip pim sparse-mode
+!
+interface Loopback1
+ vrf forwarding MCAST-P01
+ ip address 20.20.20.20 255.255.255.255
+ ip pim sparse-mode
+!
+interface Loopback22
+ vrf forwarding MCAST-P17
+ ip address 22.22.22.22 255.255.255.255
+ ip pim sparse-mode
+!
+interface GigabitEthernet1
+ description # P2P Backbone #
+ ip address 10.0.12.2 255.255.255.0
+ ip ospf network point-to-point
+ negotiation auto
+ mpls ip
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet3
+ description # P2P Backbone #
+ ip address 10.0.23.2 255.255.255.0
+ ip ospf network point-to-point
+ negotiation auto
+ mpls ip
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet4
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet5
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet6
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet7
+ description # To Mcast Client #
+ vrf forwarding MCAST-P01
+ ip address 192.168.2.1 255.255.255.0
+ ip pim sparse-mode
+ negotiation auto
+!
+interface GigabitEthernet8
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+router ospf 1
+ router-id 2.2.2.2
+ network 0.0.0.0 255.255.255.255 area 0
+ mpls ldp autoconfig area 0
+!
+router bgp 100
+ bgp router-id 2.2.2.2
+ bgp log-neighbor-changes
+ neighbor 1.1.1.1 remote-as 100
+ neighbor 1.1.1.1 update-source Loopback0
+ !
+ address-family ipv4 mvpn
+  neighbor 1.1.1.1 activate
+  neighbor 1.1.1.1 send-community extended
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 1.1.1.1 activate
+  neighbor 1.1.1.1 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf MCAST-P01
+  redistribute connected
+ exit-address-family
+ !
+ address-family ipv4 vrf MCAST-P17
+  redistribute connected
+ exit-address-family
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+line con 0
+ stopbits 1
+line vty 0 4
+ login local
+ transport input telnet ssh
+!
+!
+!
+!
+!
+!
+end
+
+R2#
+R2#exit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+R2 con0 is now available
+
+
+
+
+
+Press RETURN to get started.
+
+
+
+
+
+
+
+
+
+
+
+
+
